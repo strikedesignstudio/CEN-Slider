@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3-Column Slider</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: sans-serif;
+    }
+
+    .slider-container {
+      width: 100%;
+      height: 65vh;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slider-track {
+      display: flex;
+      transition: transform 0.5s ease;
+      height: 100%;
+    }
+
+    .slide {
+      min-width: calc(100% / 3);
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      opacity: 0.8;
+    }
+
+    .slide-inner {
+      width: 90%;
+      height: 90%;
+      background: #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .slide.center {
+      transform: scale(1.05);
+      opacity: 1;
+      z-index: 1;
+    }
+
+    .nav-arrow {
+      position: absolute;
+      bottom: 1rem;
+      right: 1rem;
+      background: #000;
+      color: #fff;
+      border: none;
+      padding: 0.75rem 1rem;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .dots {
+      position: absolute;
+      bottom: 1rem;
+      left: 1rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #aaa;
+      cursor: pointer;
+    }
+
+    .dot.active {
+      background: #000;
+    }
+
+    @media (max-width: 768px) {
+      .slide-inner {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="slider-container">
+  <div class="slider-track" id="sliderTrack">
+    <div class="slide"><div class="slide-inner">1</div></div>
+    <div class="slide"><div class="slide-inner">2</div></div>
+    <div class="slide"><div class="slide-inner">3</div></div>
+    <div class="slide"><div class="slide-inner">4</div></div>
+    <div class="slide"><div class="slide-inner">5</div></div>
+  </div>
+
+  <button class="nav-arrow" id="nextBtn">&#9654;</button>
+  <div class="dots" id="dots"></div>
+</div>
+
+<script>
+  const track = document.getElementById('sliderTrack');
+  const slides = document.querySelectorAll('.slide');
+  const dotsContainer = document.getElementById('dots');
+  const nextBtn = document.getElementById('nextBtn');
+
+  let currentIndex = 0;
+
+  const maxIndex = slides.length - 3;
+
+  function updateSlider() {
+    const offset = currentIndex * (100 / 3);
+    track.style.transform = `translateX(-${offset}%)`;
+
+    slides.forEach((slide, i) => {
+      slide.classList.remove('center');
+      if (i === currentIndex + 1) {
+        slide.classList.add('center');
+      }
+    });
+
+    Array.from(dotsContainer.children).forEach((dot, i) => {
+      dot.classList.toggle('active', i === currentIndex);
+    });
+  }
+
+  function createDots() {
+    for (let i = 0; i <= maxIndex; i++) {
+      const dot = document.createElement('div');
+      dot.classList.add('dot');
+      dot.addEventListener('click', () => {
+        currentIndex = i;
+        updateSlider();
+      });
+      dotsContainer.appendChild(dot);
+    }
+  }
+
+  nextBtn.addEventListener('click', () => {
+    currentIndex = (currentIndex + 1) > maxIndex ? 0 : currentIndex + 1;
+    updateSlider();
+  });
+
+  createDots();
+  updateSlider();
+</script>
+
+</body>
+</html>
