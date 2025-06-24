@@ -90,7 +90,7 @@
       width: 10px;
       height: 10px;
       border-radius: 50%;
-      opacity: 0.75;
+      opacity: 0.8;
       cursor: pointer;
       background-color: white;
     }
@@ -147,16 +147,25 @@
   const nextBtn = document.getElementById('nextBtn');
 
   let currentIndex = 0;
+  let visibleCount = getVisibleCount();
 
-  const maxIndex = slides.length - 3;
+  function getVisibleCount() {
+    return window.innerWidth <= 768 ? 1 : 3;
+  }
+
+  function updateMaxIndex() {
+    visibleCount = getVisibleCount();
+    return slides.length - visibleCount;
+  }
 
   function updateSlider() {
-    const offset = currentIndex * (100 / 3);
-    track.style.transform = `translateX(-${offset}%)`;
+    const containerWidth = document.querySelector('.slider-container').offsetWidth;
+    const offset = currentIndex * (containerWidth / visibleCount);
+    track.style.transform = `translateX(-${offset}px)`;
 
     slides.forEach((slide, i) => {
       slide.classList.remove('center');
-      if (i === currentIndex + 1) {
+      if (i === currentIndex + Math.floor(visibleCount / 2)) {
         slide.classList.add('center');
       }
     });
@@ -167,7 +176,8 @@
   }
 
   function createDots() {
-    for (let i = 0; i <= maxIndex; i++) {
+    dotsContainer.innerHTML = ''; // clear existing
+    for (let i = 0; i <= updateMaxIndex(); i++) {
       const dot = document.createElement('div');
       dot.classList.add('dot');
       dot.addEventListener('click', () => {
@@ -179,10 +189,18 @@
   }
 
   nextBtn.addEventListener('click', () => {
+    const maxIndex = updateMaxIndex();
     currentIndex = (currentIndex + 1) > maxIndex ? 0 : currentIndex + 1;
     updateSlider();
   });
 
+  window.addEventListener('resize', () => {
+    currentIndex = 0;
+    createDots();
+    updateSlider();
+  });
+
+  // Init
   createDots();
   updateSlider();
 </script>
